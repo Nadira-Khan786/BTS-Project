@@ -66,7 +66,7 @@ const getFilterTypeLogic = createLogic({
   type: FilterAction.GET_FILTER_REQUEST,
   cancelType: FilterAction.GET_FILTER_FAILED,
   async process({ action }, dispatch, done) {
-    dispatch(getFilterTypeSuccess({ isLoading: true }));
+    dispatch(getFilterTypeSuccess({ updateReq: "Start" }));
     let api = new ApiHelper();
     let result = await api.FetchFromServer(
       "",
@@ -85,7 +85,13 @@ const getFilterTypeLogic = createLogic({
       return;
     } else {
       logger(result);
-      dispatch(getFilterTypeSuccess({ data: result.data, isLoading: false }));
+      dispatch(
+        getFilterTypeSuccess({
+          data: result.data?result.data:[],
+          isLoading: false,
+          updateReq: "End",
+        })
+      );
       done();
       return;
     }
@@ -284,7 +290,7 @@ const updateFilterTypeLogic = createLogic({
         data &&
         data.findIndex((item) => item._id === action.payload.filter_type_id);
       if (result.data && result.data.is_removed) {
-        data.splice(index,1)
+        data.splice(index, 1);
       } else {
         data[index] = {
           ...result.data,
